@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -43,10 +42,15 @@ public class AuthorizationServerConfig {
                         authorize.anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(
-                                // ✅ Redirect unauthenticated users to Angular login
-                                new LoginUrlAuthenticationEntryPoint("http://localhost:4200/login")
-                        )
+                        // ✅ Pass original query params to Angular login page
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String redirectUrl = "http://localhost:4200/login";
+                            String queryString = request.getQueryString();
+                            if (queryString != null) {
+                                redirectUrl += "?" + queryString;
+                            }
+                            response.sendRedirect(redirectUrl);
+                        })
                 );
 
         return http.build();

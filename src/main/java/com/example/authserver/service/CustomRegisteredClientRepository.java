@@ -39,18 +39,20 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
     private RegisteredClient buildAngularClient() {
         return RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("angular-client")
-                .clientSecret("{noop}secret")         // Will use BCrypt when loading from DB
+                .clientSecret("{noop}secret")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("http://localhost:4200/callback")   // Angular Auth Frontend
+                .redirectUri("http://localhost:4201/callback")   // Angular Client Frontend ✅
                 .postLogoutRedirectUri("http://localhost:4200/logout")
+                .postLogoutRedirectUri("http://localhost:4201/logout")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .scope(OidcScopes.EMAIL)
                 .scope("read")
                 .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(true)   // Show consent screen
+                        .requireAuthorizationConsent(true)
                         .requireProofKey(false)
                         .build())
                 .tokenSettings(TokenSettings.builder()
