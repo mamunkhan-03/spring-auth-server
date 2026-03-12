@@ -28,4 +28,4 @@ logging:
     root: INFO
     com.example.authserver: DEBUG
     org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2: TRACE

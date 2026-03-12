@@ -36,13 +36,20 @@ public class AuthorizationServerConfig {
         http
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, authorizationServer ->
-                        authorizationServer.oidc(Customizer.withDefaults())
+                        authorizationServer
+                                .oidc(Customizer.withDefaults())
+                                // ✅ Redirect to Angular consent page
+                                .authorizationEndpoint(authorizationEndpoint ->
+                                        authorizationEndpoint.consentPage("http://localhost:4200/consent")
+                                )
                 )
                 .authorizeHttpRequests(authorize ->
                         authorize.anyRequest().authenticated()
                 )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/oauth2/**")
+                )
                 .exceptionHandling(ex -> ex
-                        // ✅ Pass original query params to Angular login page
                         .authenticationEntryPoint((request, response, authException) -> {
                             String redirectUrl = "http://localhost:4200/login";
                             String queryString = request.getQueryString();
